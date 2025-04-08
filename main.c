@@ -49,8 +49,6 @@ head_of_lot* warehousetable[TABLE_SIZE] = {NULL};
 void remove_lots( Recipe* rem_rec, int multiplier );
 void insert_ready(  Order* order, Order** ready_list_head, Order** ready_list_tail );
 
-
-//OK
 int recipe_hash_function( char *name){
     int hash = 5381;
     char c;
@@ -60,7 +58,6 @@ int recipe_hash_function( char *name){
     return (int)abs(hash % TABLE_SIZE);
 }
 
-// OK
 Recipe *search_recipe( char *name){
     int index;
     index = recipe_hash_function(name);
@@ -82,7 +79,6 @@ Recipe *search_recipe( char *name){
     }
 }
 
-//OK
 Recipe* add_recipe( char *name ){
     int index;
     Recipe *temp;
@@ -105,7 +101,6 @@ Recipe* add_recipe( char *name ){
     return temp;
 }
 
-//OK, così ha senso? ricontrollare
 void remove_recipe(char *name, Order* order_list_head, Order*  ready_list_head ){
     int index;
     Recipe *temp;
@@ -140,7 +135,6 @@ void remove_recipe(char *name, Order* order_list_head, Order*  ready_list_head )
     if(strcmp( temp->name, name )== 0 ){
         recipetable[index] = temp->next_recipe;
     } else{
-        //porto temp nel while??
         temp= temp->next_recipe;
         while(temp != NULL && strcmp(temp->name, name) != 0){
             prev = temp;
@@ -172,12 +166,7 @@ void remove_recipe(char *name, Order* order_list_head, Order*  ready_list_head )
 }
 
 //###############################################################################
-//###############################################################################
-//###############################################################################
-//###############################################################################
 
-
-//OK
 int warehouse_hash_function( char *name){
     int hash = 5381;
     char c;
@@ -187,7 +176,6 @@ int warehouse_hash_function( char *name){
     return (int) abs(hash % TABLE_SIZE);
 }
 
-//OK
 head_of_lot *search_warehouse( char *name){
     int index;
     index = warehouse_hash_function(name);
@@ -208,7 +196,7 @@ head_of_lot *search_warehouse( char *name){
         }
     }
 }
-//OK
+
 head_of_lot* add_warehouse( char *name ){
     int index;
     head_of_lot *temp;
@@ -233,7 +221,7 @@ head_of_lot* add_warehouse( char *name ){
     return temp;
 }
 
-//OK manca 1 condizione ma questa probabilmente non servirà
+//OK, manca 1 condizione ma questa non servirà effettivamente
 /*
 void warehouse_remove(char *name){
     //chiamo solo se coda lotti vuota
@@ -267,10 +255,7 @@ void warehouse_remove(char *name){
  */
 
 //################################################################################
-//################################################################################
-//################################################################################
 
-// Sembra OK
 void add_lot( head_of_lot* head, lot* lot_to_add, int current_time) {
 
     lot *prev;
@@ -307,13 +292,11 @@ void add_lot( head_of_lot* head, lot* lot_to_add, int current_time) {
     }
 }
 
-// Sembra OK unico check per il next della testa dei lotti.
 int check_can_cook( Recipe* recipe, int multiplier, int current_time){
     Ingredient* ingr;
     head_of_lot * searched;
     lot* temp_lot;
 
-    // Il secondo controlla se c'è la quantità necessaria
     ingr = recipe->ingredients;
 
     //scorro ingrdienti
@@ -321,7 +304,6 @@ int check_can_cook( Recipe* recipe, int multiplier, int current_time){
         searched = ingr->warehouse_ingrediente;
         temp_lot = ingr->warehouse_ingrediente->lots;
         // se c'è solo l'head ma non ci sono lotti
-        //magari non serve neanche, vedi
         if (temp_lot == NULL) {
             //warehouse_remove(ingr->warehouse_ingrediente->name );
             return 0;
@@ -344,7 +326,6 @@ int check_can_cook( Recipe* recipe, int multiplier, int current_time){
     return 1;
 }
 
-//OK
 void add_order( char* name, int amount, int time, Order** order_list_head, Order** order_list_tail, Order** ready_list_head, Order** ready_list_tail) {
     Recipe* recipe_pointer = search_recipe(name);
     if( recipe_pointer == NULL ) {
@@ -371,13 +352,10 @@ void add_order( char* name, int amount, int time, Order** order_list_head, Order
             }
         }
 
-        //modo migliore per mettere l'if
-        //Qui metto il codice per inserirlo, giusto?
         printf("accettato\n");
     }
 }
 
-//Sembra OK, ricontrollare perchè warning???
 void insert_ready(  Order* order, Order** ready_list_head, Order** ready_list_tail ) {
     Order* head = *ready_list_head;
     Order* prev = NULL;
@@ -403,9 +381,7 @@ void insert_ready(  Order* order, Order** ready_list_head, Order** ready_list_ta
     }
 }
 
-// sembra ok, dovrebbe funzionare, manca giusto una ricontrollatina
 void remove_lots( Recipe* rem_rec, int multiplier ) {
-    //devo eliminare anche la ricetta
     Ingredient* ingr = rem_rec->ingredients;
     lot* prev = NULL;
     head_of_lot* head_lot = ingr->warehouse_ingrediente;
@@ -440,20 +416,16 @@ void remove_lots( Recipe* rem_rec, int multiplier ) {
     }
 }
 
-// Sembra OK, riguarda un attimo
 void lets_cook( Order** order_list_head, Order** order_list_tail, Order** ready_list_head, Order** ready_list_tail, int current_time ) {
     //scorre lista ordini dalla testa e verifica che siano cucinabili, se lo sono li cucina
-    //verifica che sia corretta
     Order* temp = *order_list_head;
     Order* prev = NULL;
     while( temp != NULL) {
 
         if( check_can_cook( temp->recipe, temp->amount, current_time ) == 1 ) {
             remove_lots( temp->recipe, temp->amount );
-            //invertendo gli if viene più efficiente??
 
             if ( temp != *order_list_head && temp != *order_list_tail ) {
-                //OK
                 prev->next_order = temp->next_order;
                 insert_ready(temp,  ready_list_head, ready_list_tail)  ;
                 temp = prev->next_order;
@@ -480,7 +452,6 @@ void lets_cook( Order** order_list_head, Order** order_list_tail, Order** ready_
             }
         } else {
             prev = temp;
-            //non dà problemi?? serve un check??
             temp = temp->next_order;
         }
     }
@@ -527,7 +498,6 @@ void load_truck( Order** ready_list_head, Order** ready_list_tail, int truck_cap
     }
 
     while( temp != NULL && total_weight < truck_capacity) {
-        // si può scrivere più efficientemente? copre tutti i casi?
         total_weight = total_weight + (temp->recipe->weight*temp->amount);
         if (total_weight <= truck_capacity ) {
             move = temp;
@@ -575,9 +545,6 @@ int main(int argc, char* argv[]){
     Order* ready_list_tail = NULL;
     int var;
 
-// Serve lista ordini pronti globalmente accessibile
-    // Giusto??
-
     var = scanf( "%d %d", &truck_time, &truck_capacity );
     fprintf(stderr, "%d", var);
 
@@ -592,7 +559,6 @@ int main(int argc, char* argv[]){
             quit = 1;
         }
         else{
-            // aggiungi parte dove legge periodicità corriere
             if(strcmp(buff,"aggiungi_ricetta") == 0){
                 var = scanf("%s", buff);
                 recipe_to_add = add_recipe(buff);
