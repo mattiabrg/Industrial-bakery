@@ -1,2 +1,2 @@
 # Industrial-bakery
-This is a project I coded for the Algorithms and Principles of Computer Science course I took in 2024. This managed to get me a grade of 30/30. 
+I coded this project for my Algorithms and Principles of Computer Science course in 2024, and it earned me a grade of 30/30.
